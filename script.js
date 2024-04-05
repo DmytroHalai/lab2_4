@@ -32,7 +32,7 @@ const pseudoRandom = (seed) => {
 
     return function() {
         value = (value * 1103515245 + 12345) % 2147483648;
-        return value % 100 < 25;
+        return value % 100 < 19;
     }
 }
 
