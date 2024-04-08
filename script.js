@@ -436,15 +436,10 @@ const cubeMatrix = (matrix) => {
     return multMatrix(matrix, multMatrix(matrix, matrix));
 }
 
-const forthMatrix = (matrix) => {
-    return multMatrix(matrix, cubeMatrix(matrix, matrix));
-}
-
 const printMatrix = (matrix, joiner= ', ') => {
-    for (let i = 0; i < matrix.length; i++){
-        console.log(matrix[i].join(joiner))
-    }
-    console.log('\n');
+    matrix.forEach((row, index) => {
+        console.log(`${index + 1}) ` + row.join(joiner));
+    });
 }
 
 const findPrintWay2 = (matrix, sqrMatrix) => {
@@ -455,7 +450,7 @@ const findPrintWay2 = (matrix, sqrMatrix) => {
             if (sqrMatrix[i][j] === 0) continue;
             for (let k = 0; k < count; k++){
                 //if (i === j) continue;
-                if (matrix[k][j] === 1 && matrix[i][k] === 1){
+                if (matrix[k][j] === 1 && matrix[i][k] === 1 && (k !== j || k !== i)){
                     result.push([i + 1, k + 1, j + 1]);
                 }
             }
@@ -477,7 +472,7 @@ const findPrintWays3 = (matrix, cbMatrix) => {
                 if (matrix[i][k] === 1){
                     for (let f = 0; f < count; f++){
                         if (matrix[f][j] === 1){
-                            if (matrix[k][f] === 1)
+                            if (matrix[k][f] === 1 && k !== f)
                                 result.push([i + 1, k + 1, f + 1, j + 1])
                         }
                     }
@@ -491,39 +486,30 @@ const findPrintWays3 = (matrix, cbMatrix) => {
     console.log('\n');
 }
 
-const unitMatrix = (count) => {
-    let matrix = new Array(count);
-    for (let i = 0; i < count; i++) {
-        matrix[i] = new Array(count);
-    }
-    for (let i = 0; i < count; i++){
-        for (let j = 0; j < count; j++){
-            if (i === j) {
-                matrix[i][j] = 1;
-            }
-            else matrix[i][j] = 0;
-        }
-    }
-    return matrix;
-}
-
 const reachMatrix = (matrix) => {
-    const count = matrix[0].length,
-        unit = unitMatrix(count),
-        one = matrix,
-        two = squareMatrix(matrix),
-        three = cubeMatrix(matrix),
-        four = forthMatrix(matrix);
+    const count = matrix[0].length;
+    let matrixObject = {
+        1: matrix,
+    };
+    for (let i = 2; i <= count - 1; i++){
+        const num = i - 1
+        matrixObject[`${i}`] = multMatrix(matrix, matrixObject[`${num}`]);
+    }
     let result = new Array(count);
     for (let i = 0; i < count; i++) {
         result[i] = new Array(count);
     }
     for (let i = 0; i < count; i++){
         for (let j = 0; j < count; j++){
-            if (unit[i][j] === 0 && one[i][j] === 0 && two[i][j] === 0 && three[i][j] === 0 && four[i][j] === 0){
-                result[i][j] = 0;
+            let val = false;
+            for (let key in matrixObject) {
+                if (matrixObject[key][i][j] > 0){
+                    val = true;
+                    break;
+                }
             }
-            else result[i][j] = 1;
+            if (val || i === j) result[i][j] = 1;
+            else result[i][j] = 0;
         }
     }
     return result;
@@ -569,12 +555,123 @@ const printStrongMatrix = (matrix) => {
     console.log('\n');
 }
 
+const convertMatrixToString = (matrix) => {
+    let result = {};
+    matrix.forEach((row, index) => result[index] = row.join(''));
+    return result;
+}
+
+const findComponents = (inputObj) => {
+    const result = {};
+    const valueToIndexMap = {};
+    let indexCounter = 1;
+
+    Object.entries(inputObj).forEach(([key, value]) => {
+        if (!valueToIndexMap[value]) {
+            valueToIndexMap[value] = indexCounter;
+            result[indexCounter] = [key];
+            indexCounter++;
+        } else {
+            result[valueToIndexMap[value]].push(key);
+        }
+    });
+
+    return result;
+};
+
+const drawCondVertex = (Coords, i) => {
+    ctx.beginPath();
+    ctx.arc(Coords.xCoord[i], Coords.yCoord[i], VERTEX_RADIUS, 0, Math.PI * 2);
+    ctx.strokeStyle = 'black';
+    ctx.stroke();
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    ctx.fillStyle = 'black';
+    ctx.fillText(`K${parseInt(i)+1}`, Coords.xCoord[i], Coords.yCoord[i]);
+    ctx.closePath();
+}
+
+const findNumInComp = (matrix, obj, k) => {
+    let numArr = [],
+        result = [];
+    for (let counter = 0; counter < obj.length; counter++){
+        if (counter !== k){
+            for (let i = 0; i < matrix.length; i++){
+                if (matrix[counter][i] === 1){
+                    numArr.push(i);
+                }
+            }
+        }
+    }
+    for (let i = 0; i < obj.length; i++){
+        for (let j = 0; j < numArr.length; j++){
+            if (obj[i].includes(numArr[j].toString())){
+                result.push(i);
+            }
+        }
+    }
+    return result;
+}
+
+const drawCondGraph = (matrix, obj, x, y) => {
+    const Coords = findVertexCoord(VERTEX_COUNT, x, y);
+    let CondCoords = {
+            xCoord: [],
+            yCoord: []
+        },
+        pointer = 0,
+        arr = [];
+
+    Object.entries(obj).forEach(([, value]) => {
+        CondCoords.xCoord.push(Coords.xCoord[value[0]]);
+        CondCoords.yCoord.push(Coords.yCoord[value[0]]);
+        arr.push(value.map((value) => parseInt(value)));
+    });
+    console.log(CondCoords);
+    console.log(arr);
+
+    for (let i = 0; i < arr.length; i++){
+        for (let j = 0; j < arr[i].length; j++){
+            console.log(matrix[arr[j]].includes(1));
+            if (matrix[arr[j]].includes(1)){
+                console.log(i === j)
+                if (i !== j) {
+                    const vertexIndex = matrix[arr[j]].indexOf(1);
+                    console.log('vertexIndex: ' + vertexIndex);
+                    let arrEndIndex = -1;
+                    for (let k = 0; k < arr.length; k++){
+                        if (arrEndIndex !== -1){}
+                        else {
+                            console.log('arrEndIndex: ' + arr[k].indexOf(vertexIndex));
+                            arrEndIndex = arr[k].indexOf(vertexIndex);
+                        }
+                    }
+                        const angle = calculateAngle(CondCoords, arr[i][j], arrEndIndex);
+                    drawLine(CondCoords, arr[i][j], arrEndIndex);
+                    arrow(CondCoords, arrEndIndex, angle, VERTEX_RADIUS);
+                }
+            }
+        }
+    }
+    Object.entries(obj).forEach(() => {
+        drawCondVertex(CondCoords, pointer);
+        pointer++;
+    });
+}
+
+const componentsOutput = (object) => {
+    let arr = [];
+    Object.entries(object).forEach(([, value]) => {
+        arr.push(value.map((value) => parseInt(value)));
+    });
+    arr.forEach((arr) => console.log(`Components of strong connectivity are: {${arr.join(', ')}}`))
+}
 
 const matrix = createDirMatrix(N, k1)
 const undMatrix = undirMatrix(createDirMatrix(N, k1));
-drawUndirMatrixEdges(300, 180, N, k1);
+// drawUndirMatrixEdges(300, 180, N, k1);
 drawDirMatrixEdges(800, 180, N, k1);
-drawVertexes(ctx, VERTEX_COUNT, 300, 180);
+// drawVertexes(ctx, VERTEX_COUNT, 300, 180);
 drawVertexes(ctx, VERTEX_COUNT, 800, 180);
 matrixOutput(matrix, "dirMatrixTable");
 matrixOutput(undMatrix, "undirMatrixTable")
@@ -588,16 +685,17 @@ checkGraphRegular(matrix, dirPow);
 isolAndHangingVertexes(dirPow);
 
 const matrix2 = createDirMatrix(N, k2);
-// drawDirMatrixEdges(1300, 180, N, k1);
-// drawVertexes(ctx, VERTEX_COUNT, 1300, 180);
+drawDirMatrixEdges(1300, 180, N, k1);
+drawVertexes(ctx, VERTEX_COUNT, 1300, 180);
 findDirMatrixEnterPower(matrix2);
 findDirMatrixExitPower(matrix2);
-const res = squareMatrix(matrix);
-const res2 = cubeMatrix(matrix);
+const res = squareMatrix(matrix2);
+const res2 = cubeMatrix(matrix2);
 
-printMatrix(matrix);
-printMatrix(res2);
-findPrintWay2(matrix, res);
-findPrintWays3(matrix, res);
-printReachMatrix(matrix);
-printStrongMatrix(reachMatrix(matrix));
+findPrintWay2(matrix2, res);
+findPrintWays3(matrix2, res2);
+printReachMatrix(matrix2);
+const cond = findComponents(convertMatrixToString(strongMatrix(reachMatrix(matrix2))));
+componentsOutput(cond);
+drawCondGraph(matrix2, cond, 300, 180);
+printStrongMatrix(reachMatrix(matrix2));
