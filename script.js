@@ -365,7 +365,7 @@ const findDirMatrixExitPower = (matrix) => {
     for (let i = 0; i < matrix[0].length; i++){
         let counter = 0;
         for (let j = 0; j < matrix[0].length; j++){
-            if (matrix[i][j] === 1){
+            if (matrix[i][j] === 1 && i !== j){
                 counter++;
             }
         }
@@ -591,28 +591,6 @@ const drawCondVertex = (Coords, i) => {
     ctx.closePath();
 }
 
-const findNumInComp = (matrix, obj, k) => {
-    let numArr = [],
-        result = [];
-    for (let counter = 0; counter < obj.length; counter++){
-        if (counter !== k){
-            for (let i = 0; i < matrix.length; i++){
-                if (matrix[counter][i] === 1){
-                    numArr.push(i);
-                }
-            }
-        }
-    }
-    for (let i = 0; i < obj.length; i++){
-        for (let j = 0; j < numArr.length; j++){
-            if (obj[i].includes(numArr[j].toString())){
-                result.push(i);
-            }
-        }
-    }
-    return result;
-}
-
 const drawCondGraph = (matrix, obj, x, y) => {
     const Coords = findVertexCoord(VERTEX_COUNT, x, y);
     let CondCoords = {
@@ -647,7 +625,6 @@ const drawCondGraph = (matrix, obj, x, y) => {
         }
     }
 
-    console.log(val);
     for (let i = 0; i < val.start.length; i++){
         if (checkRepeat(val, i)){
             const angle = calculateAngle(CondCoords, val.start[i], val.end[i]);
@@ -682,9 +659,9 @@ const componentsOutput = (object) => {
 
 const matrix = createDirMatrix(N, k1)
 const undMatrix = undirMatrix(createDirMatrix(N, k1));
-// drawUndirMatrixEdges(300, 180, N, k1);
+drawUndirMatrixEdges(300, 180, N, k1);
 drawDirMatrixEdges(800, 180, N, k1);
-// drawVertexes(ctx, VERTEX_COUNT, 300, 180);
+drawVertexes(ctx, VERTEX_COUNT, 300, 180);
 drawVertexes(ctx, VERTEX_COUNT, 800, 180);
 matrixOutput(matrix, "dirMatrixTable");
 matrixOutput(undMatrix, "undirMatrixTable")
@@ -698,8 +675,13 @@ checkGraphRegular(matrix, dirPow);
 isolAndHangingVertexes(dirPow);
 
 const matrix2 = createDirMatrix(N, k2);
-drawDirMatrixEdges(1300, 180, N, k1);
-drawVertexes(ctx, VERTEX_COUNT, 1300, 180);
+console.log("Start of printing matrix2>>>");
+printMatrix(matrix2);
+console.log("<<<End of printing matrix2");
+console.log('\n');
+
+drawDirMatrixEdges(300, 600, N, k2);
+drawVertexes(ctx, VERTEX_COUNT, 300, 600);
 findDirMatrixEnterPower(matrix2);
 findDirMatrixExitPower(matrix2);
 const res = squareMatrix(matrix2);
@@ -708,7 +690,7 @@ const res2 = cubeMatrix(matrix2);
 findPrintWay2(matrix2, res);
 findPrintWays3(matrix2, res2);
 printReachMatrix(matrix2);
+printStrongMatrix(reachMatrix(matrix2));
 const cond = findComponents(convertMatrixToString(strongMatrix(reachMatrix(matrix2))));
 componentsOutput(cond);
-drawCondGraph(matrix2, cond, 300, 180);
-printStrongMatrix(reachMatrix(matrix2));
+drawCondGraph(matrix2, cond, 800, 600);
