@@ -620,37 +620,39 @@ const drawCondGraph = (matrix, obj, x, y) => {
             yCoord: []
         },
         pointer = 0,
-        arr = [];
+        arr = [],
+        val = {
+            start: [],
+            end: []
+        }
 
     Object.entries(obj).forEach(([, value]) => {
         CondCoords.xCoord.push(Coords.xCoord[value[0]]);
         CondCoords.yCoord.push(Coords.yCoord[value[0]]);
         arr.push(value.map((value) => parseInt(value)));
     });
-    console.log(CondCoords);
-    console.log(arr);
-
     for (let i = 0; i < arr.length; i++){
         for (let j = 0; j < arr[i].length; j++){
-            console.log(matrix[arr[j]].includes(1));
-            if (matrix[arr[j]].includes(1)){
-                console.log(i === j)
-                if (i !== j) {
-                    const vertexIndex = matrix[arr[j]].indexOf(1);
-                    console.log('vertexIndex: ' + vertexIndex);
-                    let arrEndIndex = -1;
-                    for (let k = 0; k < arr.length; k++){
-                        if (arrEndIndex !== -1){}
-                        else {
-                            console.log('arrEndIndex: ' + arr[k].indexOf(vertexIndex));
-                            arrEndIndex = arr[k].indexOf(vertexIndex);
+            for (let k = 0; k < matrix[0].length; k++) {
+                if (matrix[k][arr[i][j]] === 1 && arr[i][j] !== k){
+                    for (let h = 0; h < arr.length; h++){
+                        const index = arr[h].indexOf(k);
+                        if (index >= 0 && h !== i){
+                            val.start.push(h);
+                            val.end.push(i);
                         }
                     }
-                        const angle = calculateAngle(CondCoords, arr[i][j], arrEndIndex);
-                    drawLine(CondCoords, arr[i][j], arrEndIndex);
-                    arrow(CondCoords, arrEndIndex, angle, VERTEX_RADIUS);
                 }
             }
+        }
+    }
+
+    console.log(val);
+    for (let i = 0; i < val.start.length; i++){
+        if (checkRepeat(val, i)){
+            const angle = calculateAngle(CondCoords, val.start[i], val.end[i]);
+            drawLine(CondCoords, val.start[i], val.end[i]);
+            arrow(CondCoords, val.end[i], angle, VERTEX_RADIUS);
         }
     }
     Object.entries(obj).forEach(() => {
@@ -659,12 +661,23 @@ const drawCondGraph = (matrix, obj, x, y) => {
     });
 }
 
+const checkRepeat = (val, i) => {
+    const startC = val.start[i],
+        endC = val.end[i];
+    let result = true
+    for (let j = 0; j < val.start.length; j++){
+        if (startC === val.start[j] && endC === val.end[j] && j > i){
+            result = false;
+        }
+    }
+    return result
+}
 const componentsOutput = (object) => {
     let arr = [];
     Object.entries(object).forEach(([, value]) => {
         arr.push(value.map((value) => parseInt(value)));
     });
-    arr.forEach((arr) => console.log(`Components of strong connectivity are: {${arr.join(', ')}}`))
+    arr.forEach((arr) => console.log(`Components of strong connectivity are: {${arr.map(value => value + 1).join(', ')}}`))
 }
 
 const matrix = createDirMatrix(N, k1)
