@@ -370,7 +370,7 @@ const findDirMatrixExitPower = (matrix) => {
         }
         console.log(`The power of the vertex number ${i + 1} is ${counter}`);
     }
-    console.log('<<< The end of counting entering powers for vertexes in directed matrix');
+    console.log('<<< The end of counting exiting powers for vertexes in directed matrix');
     console.log("\n");
 }
 
