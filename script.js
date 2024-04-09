@@ -350,7 +350,6 @@ const findDirMatrixEnterPower = (matrix) => {
         let counter = 0;
         for (let j = 0; j < matrix[0].length; j++){
             if (matrix[j][i] === 1){
-                if (i === j) counter++;
                 counter++;
             }
         }
@@ -365,7 +364,7 @@ const findDirMatrixExitPower = (matrix) => {
     for (let i = 0; i < matrix[0].length; i++){
         let counter = 0;
         for (let j = 0; j < matrix[0].length; j++){
-            if (matrix[i][j] === 1 && i !== j){
+            if (matrix[i][j] === 1){
                 counter++;
             }
         }
