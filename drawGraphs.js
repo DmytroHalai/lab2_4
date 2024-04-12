@@ -80,11 +80,11 @@ const drawCondGraph = (matrix, obj, x, y, count, radius, ctx) => {
         CondCoords.yCoord.push(Coords.yCoord[value[0]]);
         arr.push(value.map((value) => parseInt(value)));
     });
-    for (let i = 0; i < arr.length; i++){
-        for (let j = 0; j < arr[i].length; j++){
+    for (let i = 0; i < arr.length; i++) {
+        for (let j = 0; j < arr[i].length; j++) {
             for (let k = 0; k < matrix[0].length; k++) {
-                if (matrix[k][arr[i][j]] === 1 && arr[i][j] !== k){
-                    for (let h = 0; h < arr.length; h++){
+                if (matrix[k][arr[i][j]] === 1 && arr[i][j] !== k) {
+                    for (let h = 0; h < arr.length; h++) {
                         const index = arr[h].indexOf(k);
                         if (index >= 0 && h !== i){
                             val.start.push(h);
@@ -99,8 +99,15 @@ const drawCondGraph = (matrix, obj, x, y, count, radius, ctx) => {
     for (let i = 0; i < val.start.length; i++){
         if (checkRepeat(val, i)){
             const angle = calculateAngle(CondCoords, val.start[i], val.end[i]);
-            drawLine(CondCoords, val.start[i], val.end[i], ctx);
-            arrow(CondCoords, val.end[i], angle, radius, ctx);
+            const valid = lineVal(CondCoords, val.start[i],  val.end[i], radius);
+            if (valid !== null){
+                drawEllipse(CondCoords, val.start[i],  val.end[i], angle, ctx, radius);
+                arrow(CondCoords, val.end[i], angle, radius, ctx, 1);
+            }
+            else{
+                drawLine(CondCoords, val.start[i],  val.end[i], ctx);
+                arrow(CondCoords, val.end[i], angle, radius, ctx);
+            }
         }
     }
     Object.entries(obj).forEach(() => {

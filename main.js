@@ -34,7 +34,7 @@ findDirMatrixExitPower(matrix);
 checkGraphRegular(matrix, dirPow);
 isolAndHangingVertexes(dirPow);
 
-const matrix2 = createDirMatrix(N, k2);
+const matrix2 = createDirMatrix(N, k2)
 console.log("Start of printing matrix2>>>");
 printMatrix(matrix2);
 console.log("<<<End of printing matrix2");
@@ -42,8 +42,11 @@ console.log('\n');
 
 drawDirMatrixEdges(300, 600, N, ctx, VERTEX_RADIUS, VERTEX_COUNT, k2);
 drawVertexes(ctx, VERTEX_COUNT, 300, 600, VERTEX_RADIUS);
+const dirPow2 = findDirMatrixPower(matrix2);
 findDirMatrixEnterPower(matrix2);
 findDirMatrixExitPower(matrix2);
+checkGraphRegular(matrix2, dirPow2);
+isolAndHangingVertexes(dirPow2);
 const res = squareMatrix(matrix2);
 const res2 = cubeMatrix(matrix2);
 

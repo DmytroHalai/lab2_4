@@ -26,22 +26,27 @@ const matrixOutput = (matrix, tableId) => {
 }
 
 const printMatrix = (matrix, joiner= ', ') => {
+    console.group("matrix")
     matrix.forEach((row, index) => {
         console.log(`${index + 1}) ` + row.join(joiner));
     });
+    console.groupEnd();
+
 }
 
 const printReachMatrix = (matrix) => {
-    console.log("Start of printing reachability matrix>>>");
+    console.group("Start of printing reachability matrix>>>");
     printMatrix(reachMatrix(matrix));
     console.log("<<<End of printing reachability matrix");
+    console.groupEnd();
     console.log('\n');
 }
 
 const printStrongMatrix = (matrix) => {
-    console.log("Start of printing strong connectivity matrix>>>");
+    console.group("Start of printing strong connectivity matrix>>>");
     printMatrix(strongMatrix(matrix));
     console.log("<<<End of printing strong connectivity matrix");
+    console.groupEnd();
     console.log('\n');
 }
 
