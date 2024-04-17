@@ -80,10 +80,12 @@ const drawCondGraph = (matrix, obj, x, y, count, radius, ctx) => {
         CondCoords.yCoord.push(Coords.yCoord[value[0]]);
         arr.push(value.map((value) => parseInt(value)));
     });
+
     for (let i = 0; i < arr.length; i++) {
         for (let j = 0; j < arr[i].length; j++) {
+            const value = arr[i][j];
             for (let k = 0; k < matrix[0].length; k++) {
-                if (matrix[k][arr[i][j]] === 1 && arr[i][j] !== k) {
+                if (matrix[k][value] === 1 && value !== k) {
                     for (let h = 0; h < arr.length; h++) {
                         const index = arr[h].indexOf(k);
                         if (index >= 0 && h !== i){
